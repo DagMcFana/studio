@@ -74,10 +74,10 @@ function himars(color) {
     [color, 'Brown', color, color, 'Brown', color]]
 }
 
-const sprite_plane_friend = new Pixmap(plane('Blue'))
-const sprite_plane_foe = (new Pixmap(plane('Red'))).flip()
-const sprite_himars_friend = new Pixmap(himars('Blue'))
-const sprite_himars_foe = (new Pixmap(himars('Red'))).flip()
+const sprite_plane_friend = new Pixmap(plane('Red'))
+const sprite_plane_foe = (new Pixmap(plane('Blue'))).flip()
+const sprite_himars_friend = new Pixmap(himars('Red'))
+const sprite_himars_foe = (new Pixmap(himars('Blue'))).flip()
 const sprite_missile = new Pixmap([['Orange']])
 
 const canvas = document.getElementById("canvas");
@@ -164,17 +164,17 @@ class Fire {
 }
 
 function keyUpHandler(e) {
-  if (e.key === "k") {
+  if (e.key.toLowerCase() === "k") {
     eventQueue.push(new MoveHimars('foe', 1))
-  } else if (e.key === "j") {
+  } else if (e.key.toLowerCase() === "j") {
     eventQueue.push(new MoveHimars('foe', -1))
-  } else if (e.key === "f") {
+  } else if (e.key.toLowerCase() === "f") {
     eventQueue.push(new MoveHimars('friend', -1))
-  } else if (e.key === "d") {
+  } else if (e.key.toLowerCase() === "d") {
     eventQueue.push(new MoveHimars('friend', 1))
-  } else if (e.key === "r") {
+  } else if (e.key.toLowerCase() === "r") {
     eventQueue.push(new Fire('friend'))
-  } else if (e.key === "i") {
+  } else if (e.key.toLowerCase() === "i") {
     eventQueue.push(new Fire('foe'))
   } else {
     console.log(`Ignored: ${e}`)
@@ -202,7 +202,7 @@ function step() {
   while (ev = eventQueue.pop()) {
     ev.doit()
   }
-  if (stepCount % 4 == 0 && Math.random() > 0.99) {
+  if (stepCount % 4 == 0 && Math.random() > 0.8) {
     if (Math.random() > 0.5) {
       start_plane(sprite_plane_friend, 0, 1)
     } else {
