@@ -218,7 +218,7 @@ function step() {
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
   }
-  planes = planes.filter(p => ! is_hit(p.x, p.y, missiles))
+  planes = planes.filter(p => p.x >= 0 && p.x < width && ! is_hit(p.x, p.y, missiles))
 
 
   requestAnimationFrame(step)
