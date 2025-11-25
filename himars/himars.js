@@ -164,17 +164,17 @@ class Fire {
 }
 
 function keyUpHandler(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") {
+  if (e.key === "k") {
     eventQueue.push(new MoveHimars('foe', 1))
-  } else if (e.key === "Left" || e.key === "ArrowLeft") {
+  } else if (e.key === "j") {
     eventQueue.push(new MoveHimars('foe', -1))
-  } else if (e.key === "a") {
+  } else if (e.key === "f") {
     eventQueue.push(new MoveHimars('friend', -1))
-  } else if (e.key === "s") {
+  } else if (e.key === "d") {
     eventQueue.push(new MoveHimars('friend', 1))
-  } else if (e.key === "w") {
+  } else if (e.key === "r") {
     eventQueue.push(new Fire('friend'))
-  } else if (e.key === "Up" || e.key === "ArrowUp") {
+  } else if (e.key === "i") {
     eventQueue.push(new Fire('foe'))
   } else {
     console.log(`Ignored: ${e}`)
@@ -213,7 +213,7 @@ function step() {
   draw(ctx)
 
   missiles.forEach(m => { m.x = m.x + m.dx; m.y = m.y + m.dy })
-  missiles = missiles.filter(m => m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 2 && Math.abs(m.y - n.y) < 2).length <= 1)
+  missiles = missiles.filter(m => m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 10 && Math.abs(m.y - n.y) < 10).length <= 1)
 
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
