@@ -202,7 +202,7 @@ function step() {
   while (ev = eventQueue.pop()) {
     ev.doit()
   }
-  if (stepCount % 4 == 0 && Math.random() > 0.8) {
+  if (stepCount % 4 == 0 && Math.random() > 0.95) {
     if (Math.random() > 0.5) {
       start_plane(sprite_plane_friend, 0, 1)
     } else {
