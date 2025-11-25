@@ -213,7 +213,7 @@ function step() {
   draw(ctx)
 
   missiles.forEach(m => { m.x = m.x + m.dx; m.y = m.y + m.dy })
-  missiles = missiles.filter(m => m.y < height)
+  missiles = missiles.filter(m => m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 2 && Math.abs(m.y - n.y) < 2).length <= 1)
 
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
