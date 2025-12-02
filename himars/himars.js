@@ -188,11 +188,11 @@ function keyUpHandler(e) {
     eventQueue.push(new MoveHimars('foe', 1))
   } else if (e.key.toLowerCase() === "j") {
     eventQueue.push(new MoveHimars('foe', -1))
-  } else if (e.key.toLowerCase() === "f") {
-    eventQueue.push(new MoveHimars('friend', -1))
   } else if (e.key.toLowerCase() === "d") {
+    eventQueue.push(new MoveHimars('friend', -1))
+  } else if (e.key.toLowerCase() === "f") {
     eventQueue.push(new MoveHimars('friend', 1))
-  } else if (e.key.toLowerCase() === "r") {
+  } else if (e.key.toLowerCase() === "d") {
     eventQueue.push(new Fire('friend'))
   } else if (e.key.toLowerCase() === "i") {
     eventQueue.push(new Fire('foe'))
@@ -247,7 +247,7 @@ function step() {
     ev.doit()
   }
 
-  if (stepCount % 4 == 0 && Math.random() > 0.95) {
+  if (stepCount % 4 == 0 && Math.random() > 0.99) {
     if (Math.random() > 0.5) {
       start_plane(sprite_plane_friend, 0, 1)
     } else {
