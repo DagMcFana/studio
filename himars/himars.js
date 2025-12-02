@@ -111,6 +111,17 @@ function draw(ctx) {
   sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
   missiles.forEach(m => sprite_missile.draw(ctx, m.x, m.y))
   planes.forEach(m => m.sprite.draw(ctx, m.x, m.y))
+  if (debug) {
+    planes.forEach(p => {
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(Pixel.scale(p.x), Pixel.scale(height - p.y));
+      ctx.lineTo(Pixel.scale(p.x + p.dx * p.y), Pixel.scale(height - 1));
+      ctx.closePath();
+      ctx.stroke();
+    })
+  }
+
   ctx.font = "18px sans serif";
   ctx.fillStyle = 'Red'
   ctx.fillText(`${score_friend}`, Pixel.scale(10), Pixel.scale(height - 20));
@@ -149,11 +160,11 @@ class MoveHimars {
 }
 
 function start_plane(sprite, pos_x, dx) {
-  planes.push({ sprite: sprite, x: pos_x, y: height / 2 + Math.floor(Math.random() * (height / 2)), dx })
+  planes.push({ sprite: sprite, x: pos_x, y: height / 2 + Math.floor(Math.random() * (height / 2)), dx, bay: true })
 }
 
-function launch_missile(pos_x, dx, dy) {
-  missiles.push({ x: pos_x, y: 6, dx, dy })
+function launch_missile(pos_x, pos_y, dx, dy) {
+  missiles.push({ x: pos_x, y: pos_y, dx: dx, dy: dy })
 }
 
 class Fire {
@@ -163,9 +174,9 @@ class Fire {
 
   doit() {
     if (this.himars === "friend") {
-      launch_missile(pos_himars_friend + 4, 1, 1)
+      launch_missile(pos_himars_friend + 4, 6, 1, 1)
     } else if (this.himars === "foe") {
-      launch_missile(pos_himars_foe + 1, -1, 1)
+      launch_missile(pos_himars_foe + 1, 6, -1, 1)
     } else {
       assert(False)
     }
@@ -193,13 +204,32 @@ function keyUpHandler(e) {
 document.addEventListener("keyup", keyUpHandler);
 // document.addEventListener("keydown", keyDownHandler);
 
-function hits(plane_x, plane_y, missile_x, missile_y){
+function hits(plane_x, plane_y, missile_x, missile_y) {
   return plane_x <= missile_x && missile_x <= plane_x + 4 &&
-          plane_y <= missile_y && missile_y <= plane_y +5
+    plane_y <= missile_y && missile_y <= plane_y + 5
 }
 
-function is_hit(x, y, missiles){
+function is_hit(x, y, missiles) {
   return missiles.some(m => hits(x, y, m.x, m.y))
+}
+
+function is_colinear(v1_x, v1_y, v2_x, v2_y) {
+  return Math.abs(v1_x * v2_y - v1_y * v2_x) < 1
+}
+
+function himars_in_sight(plane_x, plane_y, himars_x, delta_x) {
+  const himars_y = 2
+  const delta_y = -1
+  return plane_x + delta_x * (plane_y - himars_y) == himars_x
+}
+
+function fire_himars(plane_x, plane_y, himars_x, delta_x) {
+  if (himars_in_sight(plane_x, plane_y, himars_x, delta_x)) {
+    launch_missile(plane_x, plane_y - 1, delta_x, -1)
+    return false
+  }
+
+  return true
 }
 
 var stepCount = 0
@@ -207,10 +237,12 @@ var stepCount = 0
 function step() {
   stepCount += 1
 
+  // Process events
   var ev
   while (ev = eventQueue.pop()) {
     ev.doit()
   }
+
   if (stepCount % 4 == 0 && Math.random() > 0.95) {
     if (Math.random() > 0.5) {
       start_plane(sprite_plane_friend, 0, 1)
@@ -218,11 +250,23 @@ function step() {
       start_plane(sprite_plane_foe, width, -1)
     }
   }
+  planes.forEach(p => { if (p.bay){
+    if (p.dx > 0) {
+      p.bay = fire_himars(p.x, p.y, pos_himars_foe, p.dx)
+    } else {
+      console.assert(p.dx < 0);
+      p.bay = fire_himars(p.x, p.y, pos_himars_friend, p.dx)
+    }}
+  })
 
+
+  // Draw
   draw(ctx)
 
+
+  // Update dynamic elements
   missiles.forEach(m => { m.x = m.x + m.dx; m.y = m.y + m.dy })
-  missiles = missiles.filter(m => m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 10 && Math.abs(m.y - n.y) < 10).length <= 1)
+  missiles = missiles.filter(m => m.y > 0 && m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 10 && Math.abs(m.y - n.y) < 10).length <= 1)
 
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
@@ -231,7 +275,7 @@ function step() {
   )
   planes = planes.filter(p => p.x >= 0 && p.x <= width && !is_hit(p.x, p.y, missiles))
 
-
+  // Loop
   requestAnimationFrame(step)
 }
 
