@@ -192,7 +192,7 @@ function keyUpHandler(e) {
     eventQueue.push(new MoveHimars('friend', -1))
   } else if (e.key.toLowerCase() === "f") {
     eventQueue.push(new MoveHimars('friend', 1))
-  } else if (e.key.toLowerCase() === "d") {
+  } else if (e.key.toLowerCase() === "r") {
     eventQueue.push(new Fire('friend'))
   } else if (e.key.toLowerCase() === "i") {
     eventQueue.push(new Fire('foe'))
