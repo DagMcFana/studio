@@ -142,28 +142,7 @@ function in_river(x_min, x_max) {
   return x_max > 7 * width / 16 && x_min < 9 * width / 16
 }
 
-class EvMoveHimars {
-  constructor(himars, dir) {
-    this.himars = himars
-    this.dir = dir
-  }
 
-  doit() {
-    if (this.himars === "friend") {
-      pos_himars_friend += this.dir
-      if (in_river(pos_himars_friend, pos_himars_friend + 6) || pos_himars_friend < 0) {
-        pos_himars_friend -= this.dir
-      }
-    } else if (this.himars == "foe") {
-      pos_himars_foe += this.dir
-      if (in_river(pos_himars_foe, pos_himars_foe + 6) || pos_himars_foe + 6 > width) {
-        pos_himars_foe -= this.dir
-      }
-    } else {
-      assert(False)
-    }
-  }
-}
 
 function start_plane(sprite, pos_x, dx) {
   planes.push({ sprite: sprite, x: pos_x, y: height / 2 + Math.floor(Math.random() * (height / 2)), dx, bay: true })
@@ -173,21 +152,6 @@ function launch_missile(pos_x, pos_y, dx, dy) {
   missiles.push({ x: pos_x, y: pos_y, dx: dx, dy: dy })
 }
 
-class EvFire {
-  constructor(himars) {
-    this.himars = himars
-  }
-
-  doit() {
-    if (this.himars === "friend") {
-      launch_missile(pos_himars_friend + 4, 6, 1, 1)
-    } else if (this.himars === "foe") {
-      launch_missile(pos_himars_foe + 1, 6, -1, 1)
-    } else {
-      assert(False)
-    }
-  }
-}
 
 
 
@@ -226,24 +190,61 @@ function fire_himars(plane_x, plane_y, himars_x, delta_x) {
 
 var stepCount = 0
 
+
+/******************/
+// Events
+
+function eventMoveHimars(himars, dir) {
+  if (himars === "friend") {
+    pos_himars_friend += dir
+    if (in_river(pos_himars_friend, pos_himars_friend + 6) || pos_himars_friend < 0) {
+      pos_himars_friend -= dir
+    }
+  } else if (himars == "foe") {
+    pos_himars_foe += dir
+    if (in_river(pos_himars_foe, pos_himars_foe + 6) || pos_himars_foe + 6 > width) {
+      pos_himars_foe -= dir
+    }
+  } else {
+    assert(False)
+  }
+}
+
+function eventFire(himars) {
+  if (himars === "friend") {
+    launch_missile(pos_himars_friend + 4, 6, 1, 1)
+  } else if (himars === "foe") {
+    launch_missile(pos_himars_foe + 1, 6, -1, 1)
+  } else {
+    assert(False)
+  }
+}
+
 /***********************/
 // Interrupt handlers
 
 function keyUpHandler(e) {
-  if (e.key.toLowerCase() === "k") {
-    eventQueue.push(new EvMoveHimars('foe', 1))
-  } else if (e.key.toLowerCase() === "j") {
-    eventQueue.push(new EvMoveHimars('foe', -1))
-  } else if (e.key.toLowerCase() === "d") {
-    eventQueue.push(new EvMoveHimars('friend', -1))
-  } else if (e.key.toLowerCase() === "f") {
-    eventQueue.push(new EvMoveHimars('friend', 1))
-  } else if (e.key.toLowerCase() === "r") {
-    eventQueue.push(new EvFire('friend'))
-  } else if (e.key.toLowerCase() === "i") {
-    eventQueue.push(new EvFire('foe'))
-  } else {
-    console.log(`Ignored: ${e}`)
+  switch (e.key.toLowerCase()) {
+    case 'k':
+      eventMoveHimars('foe', 1);
+      break;
+    case 'j':
+      eventMoveHimars('foe', -1);
+      break;
+    case 'd':
+      eventMoveHimars('friend', -1);
+      break;
+    case 'f':
+      eventMoveHimars('friend', 1)
+      break
+    case 'r':
+      eventFire('friend')
+      break
+    case 'i':
+      eventFire('foe')
+      break
+    default:
+      console.log(`Ignored: ${e}`)
   }
 }
 
