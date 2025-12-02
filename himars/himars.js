@@ -158,6 +158,8 @@ var score_foe = 0
 var missiles = []
 var planes = []
 
+var req = null
+
 /******************/
 // Object creation 
 
@@ -250,6 +252,14 @@ function keyUpHandler(e) {
     case 'i':
       eventFire('foe')
       break
+    case 'p':
+        if (req != null) {
+          cancelAnimationFrame(req)
+          req = null
+        } else {
+          req = requestAnimationFrame(stepHandler)
+        }
+        break
     default:
       console.log(`Ignored: ${e}`)
   }
@@ -313,7 +323,7 @@ function stepHandler() {
   })
 
   // Loop
-  requestAnimationFrame(stepHandler)
+  req = requestAnimationFrame(stepHandler)
 }
 
 /*********************/
@@ -323,4 +333,4 @@ function stepHandler() {
 document.addEventListener("keyup", keyUpHandler)
 
 // Register frame events
-requestAnimationFrame(stepHandler)
+req = requestAnimationFrame(stepHandler)
