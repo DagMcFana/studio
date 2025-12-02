@@ -24,7 +24,7 @@ class Pixel {
 }
 
 class Pixmap {
-  
+
 
   constructor(m) {
     this.pixmap = m
@@ -142,7 +142,7 @@ function in_river(x_min, x_max) {
   return x_max > 7 * width / 16 && x_min < 9 * width / 16
 }
 
-class MoveHimars {
+class EvMoveHimars {
   constructor(himars, dir) {
     this.himars = himars
     this.dir = dir
@@ -173,7 +173,7 @@ function launch_missile(pos_x, pos_y, dx, dy) {
   missiles.push({ x: pos_x, y: pos_y, dx: dx, dy: dy })
 }
 
-class Fire {
+class EvFire {
   constructor(himars) {
     this.himars = himars
   }
@@ -189,23 +189,7 @@ class Fire {
   }
 }
 
-function keyUpHandler(e) {
-  if (e.key.toLowerCase() === "k") {
-    eventQueue.push(new MoveHimars('foe', 1))
-  } else if (e.key.toLowerCase() === "j") {
-    eventQueue.push(new MoveHimars('foe', -1))
-  } else if (e.key.toLowerCase() === "d") {
-    eventQueue.push(new MoveHimars('friend', -1))
-  } else if (e.key.toLowerCase() === "f") {
-    eventQueue.push(new MoveHimars('friend', 1))
-  } else if (e.key.toLowerCase() === "r") {
-    eventQueue.push(new Fire('friend'))
-  } else if (e.key.toLowerCase() === "i") {
-    eventQueue.push(new Fire('foe'))
-  } else {
-    console.log(`Ignored: ${e}`)
-  }
-}
+
 
 
 function hits(plane_x, plane_y, missile_x, missile_y) {
@@ -242,7 +226,28 @@ function fire_himars(plane_x, plane_y, himars_x, delta_x) {
 
 var stepCount = 0
 
-function step() {
+/***********************/
+// Interrupt handlers
+
+function keyUpHandler(e) {
+  if (e.key.toLowerCase() === "k") {
+    eventQueue.push(new EvMoveHimars('foe', 1))
+  } else if (e.key.toLowerCase() === "j") {
+    eventQueue.push(new EvMoveHimars('foe', -1))
+  } else if (e.key.toLowerCase() === "d") {
+    eventQueue.push(new EvMoveHimars('friend', -1))
+  } else if (e.key.toLowerCase() === "f") {
+    eventQueue.push(new EvMoveHimars('friend', 1))
+  } else if (e.key.toLowerCase() === "r") {
+    eventQueue.push(new EvFire('friend'))
+  } else if (e.key.toLowerCase() === "i") {
+    eventQueue.push(new EvFire('foe'))
+  } else {
+    console.log(`Ignored: ${e}`)
+  }
+}
+
+function stepHandler() {
   stepCount += 1
 
   // Process events
@@ -261,10 +266,10 @@ function step() {
   planes.forEach(p => {
     if (p.bay) {
       if (p.dx > 0) {
-        p.bay = fire_himars(p.x, p.y, pos_himars_foe+3, p.dx)
+        p.bay = fire_himars(p.x, p.y, pos_himars_foe + 3, p.dx)
       } else {
         console.assert(p.dx < 0);
-        p.bay = fire_himars(p.x, p.y, pos_himars_friend+3, p.dx)
+        p.bay = fire_himars(p.x, p.y, pos_himars_friend + 3, p.dx)
       }
     }
   })
@@ -302,14 +307,14 @@ function step() {
   })
 
   // Loop
-  requestAnimationFrame(step)
+  requestAnimationFrame(stepHandler)
 }
 
 /*********************/
-// Interrupt sources
+// Interrupt registration
 
 // Register keyboard events
 document.addEventListener("keyup", keyUpHandler)
 
 // Register frame events
-requestAnimationFrame(step)
+requestAnimationFrame(stepHandler)
