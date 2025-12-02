@@ -98,6 +98,9 @@ function background(ctx) {
 var pos_himars_friend = width / 4
 var pos_himars_foe = 3 * width / 4
 
+var score_friend = 0
+var score_foe = 0
+
 var missiles = []
 var planes = []
 
@@ -108,6 +111,12 @@ function draw(ctx) {
   sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
   missiles.forEach(m => sprite_missile.draw(ctx, m.x, m.y))
   planes.forEach(m => m.sprite.draw(ctx, m.x, m.y))
+  ctx.font = "18px sans serif";
+  ctx.fillStyle = 'Red'
+  ctx.fillText(`${score_friend}`, Pixel.scale(10), Pixel.scale(height - 20));
+  ctx.fillStyle = 'Blue'
+  ctx.fillText(`${score_foe}`, Pixel.scale(width - 10), Pixel.scale(height - 20));
+
 }
 
 const eventQueue = []
@@ -218,7 +227,9 @@ function step() {
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
   }
-  planes = planes.filter(p => p.x >= 0 && p.x < width && ! is_hit(p.x, p.y, missiles))
+  planes.forEach(p => { if (p.x < 0) { score_foe += 1 } else if (p.x > width) { score_friend += 1 } }
+  )
+  planes = planes.filter(p => p.x >= 0 && p.x <= width && !is_hit(p.x, p.y, missiles))
 
 
   requestAnimationFrame(step)
