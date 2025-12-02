@@ -101,14 +101,27 @@ function background(ctx) {
 }
 
 
+
+/******************/
+// Global state
+
+// Step count
+var stepCount = 0
+
+// Himars positions
 var pos_himars_friend = width / 4
 var pos_himars_foe = 3 * width / 4
 
+// Scores
 var score_friend = 0
 var score_foe = 0
 
+// Flying objects
 var missiles = []
 var planes = []
+
+/******************/
+
 
 function draw(ctx) {
   background(ctx)
@@ -186,8 +199,6 @@ function fire_himars(plane_x, plane_y, himars_x, delta_x) {
 
   return true
 }
-
-var stepCount = 0
 
 
 /******************/
