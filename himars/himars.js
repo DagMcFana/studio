@@ -100,73 +100,12 @@ function background(ctx) {
   ctx.fillRect(Pixel.scale(7 * width / 16), Pixel.scale(height - 1), Pixel.scale(width / 8), Pixel.scale(1))
 }
 
-
-
-/******************/
-// Global state
-
-// Step count
-var stepCount = 0
-
-// Himars positions
-var pos_himars_friend = width / 4
-var pos_himars_foe = 3 * width / 4
-
-// Scores
-var score_friend = 0
-var score_foe = 0
-
-// Flying objects
-var missiles = []
-var planes = []
-
-/******************/
-
-
-function draw(ctx) {
-  background(ctx)
-
-  sprite_himars_friend.draw(ctx, pos_himars_friend, 1)
-  sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
-  missiles.forEach(m => sprite_missile.draw(ctx, m.x, m.y))
-  planes.forEach(m => m.sprite.draw(ctx, m.x, m.y))
-  if (debug) {
-    planes.forEach(p => {
-      ctx.strokeStyle = "black";
-      ctx.beginPath();
-      ctx.moveTo(Pixel.scale(p.x), Pixel.scale(height - p.y));
-      ctx.lineTo(Pixel.scale(p.x + p.dx * p.y), Pixel.scale(height - 1));
-      ctx.closePath();
-      ctx.stroke();
-    })
-  }
-
-  ctx.font = "18px sans serif";
-  ctx.fillStyle = color_friend
-  ctx.fillText(`${score_friend}`, Pixel.scale(10), Pixel.scale(height - 20));
-  ctx.fillStyle = color_foe
-  ctx.fillText(`${score_foe}`, Pixel.scale(width - 10), Pixel.scale(height - 20));
-
-}
-
+/*******************/
+// Geometry predicates
 
 function in_river(x_min, x_max) {
   return x_max > 7 * width / 16 && x_min < 9 * width / 16
 }
-
-
-
-function start_plane(sprite, pos_x, dx) {
-  planes.push({ sprite: sprite, x: pos_x, y: height / 2 + Math.floor(Math.random() * (height / 2)), dx, bay: true })
-}
-
-function launch_missile(pos_x, pos_y, dx, dy) {
-  missiles.push({ x: pos_x, y: pos_y, dx: dx, dy: dy })
-}
-
-
-
-
 
 function hits(plane_x, plane_y, missile_x, missile_y) {
   return plane_x <= missile_x && missile_x <= plane_x + 4 &&
@@ -200,6 +139,64 @@ function fire_himars(plane_x, plane_y, himars_x, delta_x) {
   return true
 }
 
+
+/******************/
+// Global state
+
+// Step count
+var stepCount = 0
+
+// Himars positions
+var pos_himars_friend = width / 4
+var pos_himars_foe = 3 * width / 4
+
+// Scores
+var score_friend = 0
+var score_foe = 0
+
+// Flying objects
+var missiles = []
+var planes = []
+
+/******************/
+// Object creation 
+
+function start_plane(sprite, pos_x, dx) {
+  planes.push({ sprite: sprite, x: pos_x, y: height / 2 + Math.floor(Math.random() * (height / 2)), dx, bay: true })
+}
+
+function launch_missile(pos_x, pos_y, dx, dy) {
+  missiles.push({ x: pos_x, y: pos_y, dx: dx, dy: dy })
+}
+
+/******************/
+// Scene rendering
+
+function draw(ctx) {
+  background(ctx)
+
+  sprite_himars_friend.draw(ctx, pos_himars_friend, 1)
+  sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
+  missiles.forEach(m => sprite_missile.draw(ctx, m.x, m.y))
+  planes.forEach(m => m.sprite.draw(ctx, m.x, m.y))
+  if (debug) {
+    planes.forEach(p => {
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(Pixel.scale(p.x), Pixel.scale(height - p.y));
+      ctx.lineTo(Pixel.scale(p.x + p.dx * p.y), Pixel.scale(height - 1));
+      ctx.closePath();
+      ctx.stroke();
+    })
+  }
+
+  ctx.font = "18px sans serif";
+  ctx.fillStyle = color_friend
+  ctx.fillText(`${score_friend}`, Pixel.scale(10), Pixel.scale(height - 20));
+  ctx.fillStyle = color_foe
+  ctx.fillText(`${score_foe}`, Pixel.scale(width - 10), Pixel.scale(height - 20));
+
+}
 
 /******************/
 // Events
