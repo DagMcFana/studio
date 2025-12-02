@@ -77,6 +77,15 @@ function himars(color) {
     [color, 'Brown', color, color, 'Brown', color]]
 }
 
+function himars_up(color) {
+  return [
+    [color, '', '', '', '', ''],
+    [color, '', '', '', '', ''],
+    [color, '', '', '', color, color],
+    [color, '', '', '', color, color],
+    [color, 'Brown', color, color, 'Brown', color]]
+}
+
 const color_friend = 'Black'
 const color_foe = 'Blue'
 
@@ -84,6 +93,8 @@ const sprite_plane_friend = new Pixmap(plane(color_friend))
 const sprite_plane_foe = (new Pixmap(plane(color_foe))).flip()
 const sprite_himars_friend = new Pixmap(himars(color_friend))
 const sprite_himars_foe = (new Pixmap(himars(color_foe))).flip()
+const sprite_himars_up_friend = new Pixmap(himars_up(color_friend))
+const sprite_himars_up_foe = (new Pixmap(himars_up(color_foe))).flip()
 const sprite_missile = new Pixmap([['Red']])
 
 const canvas = document.getElementById("canvas");
@@ -150,6 +161,9 @@ var stepCount = 0
 var pos_himars_friend = width / 4
 var pos_himars_foe = 3 * width / 4
 
+var cannon_friend = 'angle'
+var cannon_foe = 'angle'
+
 // Scores
 var score_friend = 0
 var score_foe = 0
@@ -177,8 +191,28 @@ function launch_missile(pos_x, pos_y, dx, dy) {
 function draw(ctx) {
   background(ctx)
 
-  sprite_himars_friend.draw(ctx, pos_himars_friend, 1)
-  sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
+  switch (cannon_friend) {
+    case 'angle':
+      sprite_himars_friend.draw(ctx, pos_himars_friend, 1)
+      break;
+    case 'up':
+      sprite_himars_up_friend.draw(ctx, pos_himars_friend, 1)
+      break;
+    default:
+      assert(false)
+  }
+
+  switch (cannon_foe) {
+    case 'angle':
+      sprite_himars_foe.draw(ctx, pos_himars_foe, 1)
+      break;
+    case 'up':
+      sprite_himars_up_foe.draw(ctx, pos_himars_foe, 1)
+      break;
+    default:
+      assert(false)
+  }
+
   missiles.forEach(m => sprite_missile.draw(ctx, m.x, m.y))
   planes.forEach(m => m.sprite.draw(ctx, m.x, m.y))
   if (debug) {
@@ -221,9 +255,48 @@ function eventMoveHimars(himars, dir) {
 
 function eventFire(himars) {
   if (himars === "friend") {
-    launch_missile(pos_himars_friend + 4, 6, 1, 1)
+    switch (cannon_friend) {
+      case 'up':
+        launch_missile(pos_himars_friend, 6, 0, 1)
+        break
+      case 'angle':
+        launch_missile(pos_himars_friend + 4, 6, 1, 1)
+        break
+    }
   } else if (himars === "foe") {
-    launch_missile(pos_himars_foe + 1, 6, -1, 1)
+    switch (cannon_foe) {
+      case 'up':
+        launch_missile(pos_himars_foe + 5, 6, 0, 1)
+        break
+      case 'angle':
+        launch_missile(pos_himars_foe + 1, 6, -1, 1)
+        break
+    }
+
+  } else {
+    assert(False)
+  }
+}
+
+function eventSwapCannon(himars) {
+  if (himars === "friend") {
+    switch (cannon_friend) {
+      case 'angle':
+        cannon_friend = 'up'
+        break
+      case 'up':
+        cannon_friend = 'angle'
+        break
+    }
+  } else if (himars === "foe") {
+    switch (cannon_foe) {
+      case 'angle':
+        cannon_foe = 'up'
+        break
+      case 'up':
+        cannon_foe = 'angle'
+        break
+    }
   } else {
     assert(False)
   }
@@ -234,12 +307,20 @@ function eventFire(himars) {
 
 function keyUpHandler(e) {
   switch (e.key.toLowerCase()) {
+    // Foe moves
     case 'k':
       eventMoveHimars('foe', 1);
       break;
     case 'j':
       eventMoveHimars('foe', -1);
       break;
+    case 'i':
+      eventFire('foe')
+      break
+    case 'o':
+      eventSwapCannon('foe')
+      break
+    // Friend moves
     case 'd':
       eventMoveHimars('friend', -1);
       break;
@@ -249,17 +330,18 @@ function keyUpHandler(e) {
     case 'r':
       eventFire('friend')
       break
-    case 'i':
-      eventFire('foe')
+    case 't':
+      eventSwapCannon('friend')
       break
+    // Everyone
     case 'p':
-        if (req != null) {
-          cancelAnimationFrame(req)
-          req = null
-        } else {
-          req = requestAnimationFrame(stepHandler)
-        }
-        break
+      if (req != null) {
+        cancelAnimationFrame(req)
+        req = null
+      } else {
+        req = requestAnimationFrame(stepHandler)
+      }
+      break
     default:
       console.log(`Ignored: ${e}`)
   }
@@ -284,7 +366,6 @@ function stepHandler() {
       if (p.dx > 0) {
         p.bay = fire_himars(p.x, p.y, pos_himars_foe + 3, p.dx)
       } else {
-        console.assert(p.dx < 0);
         p.bay = fire_himars(p.x, p.y, pos_himars_friend + 3, p.dx)
       }
     }
