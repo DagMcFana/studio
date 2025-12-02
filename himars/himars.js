@@ -60,11 +60,11 @@ class Pixmap {
 
 function plane(color) {
   return [
-    [color, '', '', ''],
-    [color, color, '', ''],
-    [color, color, color, color],
-    [color, color, '', ''],
-    [color, '', '', '']
+    ['', color, '', '', ''],
+    ['', color, color, '', ''],
+    [color, color, color, color, color],
+    ['', color, color, '', ''],
+    ['', color, '', '', '']
   ]
 }
 
@@ -268,7 +268,7 @@ function stepHandler() {
       start_plane(sprite_plane_foe, width, -1)
     }
   }
-  
+
   planes.forEach(p => {
     if (p.bay) {
       if (p.dx > 0) {
