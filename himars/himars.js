@@ -26,15 +26,16 @@ class Pixel {
 class Pixmap {
   constructor(m) {
     this.pixmap = m
+    this.svg = Pixmap.svg(m)
   }
 
-  svg() {
+  static svg(m) {
     const draw = SVG()
 
-    for (let i = 0; i < this.pixmap.length; i++) {
-      for (let j = 0; j < this.pixmap[i].length; j++) {
-        if (this.pixmap[i][j] != '') {
-          let px = new Pixel(j, i, this.pixmap[i][j])
+    for (let i = 0; i < m.length; i++) {
+      for (let j = 0; j < m[i].length; j++) {
+        if (m[i][j] != '') {
+          let px = new Pixel(j, i, m[i][j])
           px.draw(draw)
         }
       }
@@ -51,7 +52,7 @@ class Pixmap {
   }
 
   draw(ctx, x, y) {
-    ctx.drawImage(this.svg(), Pixel.scale(x), Pixel.scale(height - this.pixmap.length - y));
+    ctx.drawImage(this.svg, Pixel.scale(x), Pixel.scale(height - this.pixmap.length - y));
   }
 }
 
