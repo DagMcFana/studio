@@ -207,8 +207,6 @@ function keyUpHandler(e) {
   }
 }
 
-document.addEventListener("keyup", keyUpHandler);
-// document.addEventListener("keydown", keyDownHandler);
 
 function hits(plane_x, plane_y, missile_x, missile_y) {
   return plane_x <= missile_x && missile_x <= plane_x + 4 &&
@@ -307,5 +305,11 @@ function step() {
   requestAnimationFrame(step)
 }
 
-// Event loop
+/*********************/
+// Interrupt sources
+
+// Register keyboard events
+document.addEventListener("keyup", keyUpHandler)
+
+// Register frame events
 requestAnimationFrame(step)
