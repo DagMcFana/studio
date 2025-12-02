@@ -1,6 +1,6 @@
 "use strict";
 
-const debug = true
+const debug = false
 
 const width = 128
 const height = 72
