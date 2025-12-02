@@ -136,7 +136,6 @@ function draw(ctx) {
 
 }
 
-const eventQueue = []
 
 function in_river(x_min, x_max) {
   return x_max > 7 * width / 16 && x_min < 9 * width / 16
@@ -251,11 +250,7 @@ function keyUpHandler(e) {
 function stepHandler() {
   stepCount += 1
 
-  // Process events
-  var ev
-  while (ev = eventQueue.pop()) {
-    ev.doit()
-  }
+  // events
 
   if (stepCount % 4 == 0 && Math.random() > 0.99) {
     if (Math.random() > 0.5) {
