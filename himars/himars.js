@@ -257,10 +257,10 @@ function step() {
   planes.forEach(p => {
     if (p.bay) {
       if (p.dx > 0) {
-        p.bay = fire_himars(p.x, p.y, pos_himars_foe, p.dx)
+        p.bay = fire_himars(p.x, p.y, pos_himars_foe+3, p.dx)
       } else {
         console.assert(p.dx < 0);
-        p.bay = fire_himars(p.x, p.y, pos_himars_friend, p.dx)
+        p.bay = fire_himars(p.x, p.y, pos_himars_friend+3, p.dx)
       }
     }
   })
