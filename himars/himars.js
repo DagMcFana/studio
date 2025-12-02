@@ -261,12 +261,14 @@ function stepHandler() {
   // events
 
   if (stepCount % 4 == 0 && Math.random() > 0.99) {
-    if (Math.random() > 0.5) {
+    const d = Math.random()
+    if (d > 0.5) {
       start_plane(sprite_plane_friend, 0, 1)
-    } else {
+    } else if (d < 0.5) {
       start_plane(sprite_plane_foe, width, -1)
     }
   }
+  
   planes.forEach(p => {
     if (p.bay) {
       if (p.dx > 0) {
