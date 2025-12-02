@@ -24,6 +24,8 @@ class Pixel {
 }
 
 class Pixmap {
+  
+
   constructor(m) {
     this.pixmap = m
     this.svg = Pixmap.svg(m)
@@ -75,11 +77,14 @@ function himars(color) {
     [color, 'Brown', color, color, 'Brown', color]]
 }
 
-const sprite_plane_friend = new Pixmap(plane('Red'))
-const sprite_plane_foe = (new Pixmap(plane('Blue'))).flip()
-const sprite_himars_friend = new Pixmap(himars('Red'))
-const sprite_himars_foe = (new Pixmap(himars('Blue'))).flip()
-const sprite_missile = new Pixmap([['Orange']])
+const color_friend = 'Black'
+const color_foe = 'Blue'
+
+const sprite_plane_friend = new Pixmap(plane(color_friend))
+const sprite_plane_foe = (new Pixmap(plane(color_foe))).flip()
+const sprite_himars_friend = new Pixmap(himars(color_friend))
+const sprite_himars_foe = (new Pixmap(himars(color_foe))).flip()
+const sprite_missile = new Pixmap([['Red']])
 
 const canvas = document.getElementById("canvas");
 canvas.width = Pixel.scale(width)
@@ -91,7 +96,7 @@ function background(ctx) {
 
   ctx.fillStyle = 'Brown'
   ctx.fillRect(0, Pixel.scale(height - 1), Pixel.scale(width), Pixel.scale(1))
-  ctx.fillStyle = 'Blue'
+  ctx.fillStyle = color_foe
   ctx.fillRect(Pixel.scale(7 * width / 16), Pixel.scale(height - 1), Pixel.scale(width / 8), Pixel.scale(1))
 }
 
@@ -124,9 +129,9 @@ function draw(ctx) {
   }
 
   ctx.font = "18px sans serif";
-  ctx.fillStyle = 'Red'
+  ctx.fillStyle = color_friend
   ctx.fillText(`${score_friend}`, Pixel.scale(10), Pixel.scale(height - 20));
-  ctx.fillStyle = 'Blue'
+  ctx.fillStyle = color_foe
   ctx.fillText(`${score_foe}`, Pixel.scale(width - 10), Pixel.scale(height - 20));
 
 }
