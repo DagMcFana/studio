@@ -210,7 +210,11 @@ function hits(plane_x, plane_y, missile_x, missile_y) {
 }
 
 function is_hit(x, y, missiles) {
-  return missiles.some(m => hits(x, y, m.x, m.y))
+  return missiles.some(m => (m.dy > 0) && hits(x, y, m.x, m.y))
+}
+
+function himars_hit(x, m_x, m_y) {
+  return x <= m_x && m_x <= x + 6 && m_y <= 3
 }
 
 function is_colinear(v1_x, v1_y, v2_x, v2_y) {
@@ -250,13 +254,15 @@ function step() {
       start_plane(sprite_plane_foe, width, -1)
     }
   }
-  planes.forEach(p => { if (p.bay){
-    if (p.dx > 0) {
-      p.bay = fire_himars(p.x, p.y, pos_himars_foe, p.dx)
-    } else {
-      console.assert(p.dx < 0);
-      p.bay = fire_himars(p.x, p.y, pos_himars_friend, p.dx)
-    }}
+  planes.forEach(p => {
+    if (p.bay) {
+      if (p.dx > 0) {
+        p.bay = fire_himars(p.x, p.y, pos_himars_foe, p.dx)
+      } else {
+        console.assert(p.dx < 0);
+        p.bay = fire_himars(p.x, p.y, pos_himars_friend, p.dx)
+      }
+    }
   })
 
 
@@ -265,8 +271,11 @@ function step() {
 
 
   // Update dynamic elements
-  missiles.forEach(m => { m.x = m.x + m.dx; m.y = m.y + m.dy })
-  missiles = missiles.filter(m => m.y > 0 && m.y < height && missiles.filter(n => Math.abs(m.x - n.x) < 10 && Math.abs(m.y - n.y) < 10).length <= 1)
+  missiles.forEach(m => {
+    if (m.dy < 0 && stepCount % 16 != 0) { return }
+    m.x = m.x + m.dx; m.y = m.y + m.dy
+  })
+  missiles = missiles.filter(m => m.y > 0 && m.y < height && (m.dy < 0 || missiles.filter(n => n.dy > 0 && Math.abs(m.x - n.x) < 10 && Math.abs(m.y - n.y) < 10).length <= 1))
 
   if (stepCount % 8 == 0) {
     planes.forEach(m => { m.x = m.x + m.dx })
@@ -274,6 +283,19 @@ function step() {
   planes.forEach(p => { if (p.x < 0) { score_foe += 1 } else if (p.x > width) { score_friend += 1 } }
   )
   planes = planes.filter(p => p.x >= 0 && p.x <= width && !is_hit(p.x, p.y, missiles))
+
+  missiles = missiles.filter(m => {
+    if (himars_hit(pos_himars_friend, m.x, m.y)) {
+      score_friend -= 10;
+      return false
+    }
+    else if (himars_hit(pos_himars_foe, m.x, m.y)) {
+      score_foe -= 10;
+      return false
+    } else {
+      return true
+    }
+  })
 
   // Loop
   requestAnimationFrame(step)
