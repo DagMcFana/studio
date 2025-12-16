@@ -161,8 +161,13 @@ var stepCount = 0
 var pos_himars_friend = width / 4
 var pos_himars_foe = 3 * width / 4
 
+// Himars' cannon state
 var cannon_friend = 'angle'
 var cannon_foe = 'angle'
+
+// Himars' missile stock
+var missile_stock_friend = 9
+var missile_stock_foe = 9
 
 // Scores
 var score_friend = 0
@@ -232,6 +237,19 @@ function draw(ctx) {
   ctx.fillStyle = color_foe
   ctx.fillText(`${score_foe}`, Pixel.scale(width - 10), Pixel.scale(height - 20));
 
+  ctx.strokeStyle = color_foe;
+  ctx.beginPath();
+  ctx.moveTo(Pixel.scale(width - 10), Pixel.scale(10));
+  ctx.lineTo(Pixel.scale(width - 10 + missile_stock_foe), Pixel.scale(10));
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = color_friend;
+  ctx.beginPath();
+  ctx.moveTo(Pixel.scale(10), Pixel.scale(10));
+  ctx.lineTo(Pixel.scale(10 + missile_stock_friend), Pixel.scale(10));
+  ctx.closePath();
+  ctx.stroke();
 }
 
 /******************/
@@ -255,6 +273,9 @@ function eventMoveHimars(himars, dir) {
 
 function eventFire(himars) {
   if (himars === "friend") {
+    if (missile_stock_friend <= 0) {
+      return
+    }
     switch (cannon_friend) {
       case 'up':
         launch_missile(pos_himars_friend, 6, 0, 1)
@@ -263,7 +284,11 @@ function eventFire(himars) {
         launch_missile(pos_himars_friend + 4, 6, 1, 1)
         break
     }
+    missile_stock_friend -= 1
   } else if (himars === "foe") {
+    if (missile_stock_foe <= 0) {
+      return
+    }
     switch (cannon_foe) {
       case 'up':
         launch_missile(pos_himars_foe + 5, 6, 0, 1)
@@ -272,7 +297,7 @@ function eventFire(himars) {
         launch_missile(pos_himars_foe + 1, 6, -1, 1)
         break
     }
-
+    missile_stock_foe -= 1
   } else {
     assert(False)
   }
@@ -377,6 +402,12 @@ function stepHandler() {
 
 
   // Update dynamic elements
+
+  if (stepCount % 100 == 0){
+    missile_stock_foe = Math.min(8, missile_stock_foe + 1)
+    missile_stock_friend = Math.min(8, missile_stock_friend + 1)
+  }
+
   missiles.forEach(m => {
     if (m.dy < 0 && stepCount % 16 != 0) { return }
     m.x = m.x + m.dx; m.y = m.y + m.dy
