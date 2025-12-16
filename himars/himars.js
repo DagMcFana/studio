@@ -68,6 +68,14 @@ function plane(color) {
   ]
 }
 
+function slow_plane(color) {
+  return [
+    ['', color, '', ''],
+    [color, color, color, color],
+    ['', color, '', ''],
+  ]
+}
+
 function himars(color) {
   return [
     ['', '', '', color, '', ''],
@@ -91,6 +99,9 @@ const color_foe = 'Blue'
 
 const sprite_plane_friend = new Pixmap(plane(color_friend))
 const sprite_plane_foe = (new Pixmap(plane(color_foe))).flip()
+const sprite_slow_plane_friend = new Pixmap(slow_plane(color_friend))
+const sprite_slow_plane_foe = (new Pixmap(slow_plane(color_foe))).flip()
+
 const sprite_himars_friend = new Pixmap(himars(color_friend))
 const sprite_himars_foe = (new Pixmap(himars(color_foe))).flip()
 const sprite_himars_up_friend = new Pixmap(himars_up(color_friend))
@@ -379,10 +390,14 @@ function stepHandler() {
 
   if (stepCount % 4 == 0 && Math.random() > 0.99) {
     const d = Math.random()
-    if (d > 0.5) {
-      start_plane(sprite_plane_friend, 0, 1)
-    } else if (d < 0.5) {
-      start_plane(sprite_plane_foe, width, -1)
+    if (d > 0.75) {
+      start_plane(sprite_plane_friend, 0, 2)
+    } else if (d > 0.5) {
+      start_plane(sprite_slow_plane_friend, 0, 1)
+    } else if (d > 0.25) {
+      start_plane(sprite_plane_foe, width, -2)
+    } else if (d > 0) {
+      start_plane(sprite_slow_plane_foe, width, -1)
     }
   }
 
@@ -403,7 +418,7 @@ function stepHandler() {
 
   // Update dynamic elements
 
-  if (stepCount % 100 == 0){
+  if (stepCount % 100 == 0) {
     missile_stock_foe = Math.min(8, missile_stock_foe + 1)
     missile_stock_friend = Math.min(8, missile_stock_friend + 1)
   }
