@@ -149,12 +149,13 @@ function is_colinear(v1_x, v1_y, v2_x, v2_y) {
 function himars_in_sight(plane_x, plane_y, himars_x, delta_x) {
   const himars_y = 2
   const delta_y = -1
-  return plane_x + delta_x * (plane_y - himars_y) == himars_x
+  const target = plane_x + delta_x/Math.abs(delta_x) * (plane_y - himars_y)
+  return himars_x - 3 <= target && target <= himars_x + 2
 }
 
 function fire_himars(plane_x, plane_y, himars_x, delta_x) {
   if (himars_in_sight(plane_x, plane_y, himars_x, delta_x)) {
-    launch_missile(plane_x, plane_y - 1, delta_x, -1)
+    launch_missile(plane_x, plane_y - 1, delta_x/Math.abs(delta_x), -1)
     return false
   }
 
