@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gamepad Square</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #f2f2f2;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+      .wrap {
+        display: grid;
+        place-items: center;
+        height: 100%;
+      }
+      canvas {
+        background: #ffffff;
+        border: 2px solid #222;
+        image-rendering: crisp-edges;
+      }
+      .hint {
+        margin-top: 10px;
+        color: #333;
+        font-size: 14px;
+      }
+      .status {
+        margin-top: 6px;
+        color: #555;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div>
+        <canvas id="game" width="1024" height="768"></canvas>
+        <div class="hint">Connect a gamepad and move the left stick or D-pad.</div>
+        <div class="status" id="haptics-status">Haptics: checking…</div>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
