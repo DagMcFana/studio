@@ -5,6 +5,49 @@ const debug = false
 const width = 128
 const height = 72
 
+const deadzone = 0.18;
+
+
+function getGamepads() {
+  return navigator.getGamepads ? navigator.getGamepads() : [];
+}
+
+// function applyDeadzone(value) {
+//  if (Math.abs(value) < deadzone) return 0;
+//  return value;
+// }
+
+function readGamepad(pad, player) {
+  let x = 0;
+
+
+  if (pad) {
+    // const axisX = applyDeadzone(pad.axes[0] || 0);
+    // const axisY = applyDeadzone(pad.axes[1] || 0);
+
+    // x = axisX;
+    // y = axisY;
+
+    const dpadLeft = pad.buttons[14] && pad.buttons[14].value == 1;
+    const dpadRight = pad.buttons[15] && pad.buttons[15].value == 1;
+    const dpadUp = pad.buttons[12] && pad.buttons[12].value == 1;
+    const dpadDown = pad.buttons[13] && pad.buttons[13].value == 1;
+
+    if (dpadLeft) x = -1;
+    if (dpadRight) x = 1;
+
+    if (x != 0) {
+      eventMoveHimars(player, x);
+    }
+    if (dpadUp) {
+      eventFire(player)
+    }
+    if (dpadDown) {
+      eventSwapCannon(player)
+    }
+  }
+}
+
 
 class Pixel {
   constructor(x, y, color) {
@@ -149,13 +192,13 @@ function is_colinear(v1_x, v1_y, v2_x, v2_y) {
 function himars_in_sight(plane_x, plane_y, himars_x, delta_x) {
   const himars_y = 2
   const delta_y = -1
-  const target = plane_x + delta_x/Math.abs(delta_x) * (plane_y - himars_y)
+  const target = plane_x + delta_x / Math.abs(delta_x) * (plane_y - himars_y)
   return himars_x - 3 <= target && target <= himars_x + 2
 }
 
 function fire_himars(plane_x, plane_y, himars_x, delta_x) {
   if (himars_in_sight(plane_x, plane_y, himars_x, delta_x)) {
-    launch_missile(plane_x, plane_y - 1, delta_x/Math.abs(delta_x), -1)
+    launch_missile(plane_x, plane_y - 1, delta_x / Math.abs(delta_x), -1)
     return false
   }
 
@@ -190,6 +233,8 @@ var missiles = []
 var planes = []
 
 var req = null
+
+
 
 /******************/
 // Object creation 
@@ -387,6 +432,19 @@ function keyUpHandler(e) {
 function stepHandler() {
   stepCount += 1
 
+  const pads = getGamepads();
+const pad1 = pads[0];
+const pad2 = pads[1];
+
+console.log(pads)
+
+  if (pad1) {
+    readGamepad(pad1, 'friend');
+  }
+  if (pad2) {
+    readGamepad(pad2, 'foe')
+  }
+
   // events
 
   if (stepCount % 4 == 0 && Math.random() > 0.99) {
@@ -419,7 +477,7 @@ function stepHandler() {
 
   // Update dynamic elements
 
-  if (stepCount % 100 == 0) {
+  if (stepCount % 50 == 0) {
     missile_stock_foe = Math.min(8, missile_stock_foe + 1)
     missile_stock_friend = Math.min(8, missile_stock_friend + 1)
   }
