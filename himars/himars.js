@@ -17,35 +17,34 @@ function getGamepads() {
 //  return value;
 // }
 
-function readGamepad(pad, player) {
+function readGamepad(pad, prevButtons, player) {
   let x = 0;
 
 
-  if (pad) {
-    // const axisX = applyDeadzone(pad.axes[0] || 0);
-    // const axisY = applyDeadzone(pad.axes[1] || 0);
+  if (!pad) { assert(false) }
 
-    // x = axisX;
-    // y = axisY;
+  const dpadLeft = pad.buttons[14] && pad.buttons[14].value == 1;
+  const dpadRight = pad.buttons[15] && pad.buttons[15].value == 1;
 
-    const dpadLeft = pad.buttons[14] && pad.buttons[14].value == 1;
-    const dpadRight = pad.buttons[15] && pad.buttons[15].value == 1;
-    const dpadUp = pad.buttons[12] && pad.buttons[12].value == 1;
-    const dpadDown = pad.buttons[13] && pad.buttons[13].value == 1;
+  if (dpadLeft) x = -1;
+  if (dpadRight) x = 1;
 
-    if (dpadLeft) x = -1;
-    if (dpadRight) x = 1;
-
-    if (x != 0) {
-      eventMoveHimars(player, x);
-    }
-    if (dpadUp) {
-      eventFire(player)
-    }
-    if (dpadDown) {
-      eventSwapCannon(player)
-    }
+  if (x != 0) {
+    eventMoveHimars(player, x);
   }
+
+
+  const currentButtons = [
+    pad.buttons[0] && pad.buttons[0].pressed,
+    pad.buttons[1] && pad.buttons[1].pressed,
+  ];
+
+  if (currentButtons[0] && !prevButtons[0]) eventSwapCannon(player); // A
+  if (currentButtons[1] && !prevButtons[1]) eventFire(player); // B
+
+  prevButtons[0] = currentButtons[0];
+  prevButtons[1] = currentButtons[1]
+
 }
 
 
@@ -234,6 +233,8 @@ var planes = []
 
 var req = null
 
+let prevButtons1 = [false, false]
+let prevButtons2 = [false, false]
 
 
 /******************/
@@ -433,16 +434,14 @@ function stepHandler() {
   stepCount += 1
 
   const pads = getGamepads();
-const pad1 = pads[0];
-const pad2 = pads[1];
-
-console.log(pads)
+  const pad1 = pads[0];
+  const pad2 = pads[1];
 
   if (pad1) {
-    readGamepad(pad1, 'friend');
+    readGamepad(pad1, prevButtons1, 'friend');
   }
   if (pad2) {
-    readGamepad(pad2, 'foe')
+    readGamepad(pad2, prevButtons2, 'foe')
   }
 
   // events
