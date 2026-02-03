@@ -446,7 +446,7 @@ function stepHandler() {
 
   // events
 
-  if (stepCount % 4 == 0 && Math.random() > 0.99) {
+  if (stepCount % 4 == 0 && Math.random() > 0.93) {
     const d = Math.random()
     if (d > 0.75) {
       start_plane(sprite_plane_friend, 0, 2)
