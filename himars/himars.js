@@ -154,6 +154,8 @@ const canvas = document.getElementById("canvas");
 canvas.width = Pixel.scale(width)
 canvas.height = Pixel.scale(height)
 const ctx = canvas.getContext("2d");
+  const planeDensity = document.getElementById("plane-density");
+
 
 function background(ctx) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -446,7 +448,7 @@ function stepHandler() {
 
   // events
 
-  if (stepCount % 4 == 0 && Math.random() > 0.93) {
+  if (stepCount % 50 == 0 && Math.random() > planeDensity.value / 100) {
     const d = Math.random()
     if (d > 0.75) {
       start_plane(sprite_plane_friend, 0, 2)

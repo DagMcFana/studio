@@ -3,6 +3,7 @@
   const ctx = canvas.getContext("2d");
   const hapticsStatus = document.getElementById("haptics-status");
 
+
   const square = {
     size: 48,
     x: (canvas.width - 48) / 2,
