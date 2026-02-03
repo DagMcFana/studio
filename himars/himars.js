@@ -2,7 +2,7 @@
 
 const debug = false
 
-const width = 128
+const width = 100
 const height = 72
 
 const deadzone = 0.18;
@@ -56,7 +56,7 @@ class Pixel {
   }
 
   static scale(x) {
-    return x * 8
+    return x * 12
   }
 
   draw(o) {
