@@ -8,7 +8,7 @@ function getGamepads() {
 
 function applyDeadzone(value) {
     if (Math.abs(value) < deadzone) return 0;
-    return value;
+    return value/100;
 }
 
 function readGamepad(pad, prevButtons, action) {
@@ -18,7 +18,7 @@ function readGamepad(pad, prevButtons, action) {
     if (!pad) { assert(false) }
 
     const axisX = applyDeadzone(pad.axes[0] || 0);
-    const axisY = - applyDeadzone(pad.axes[1] || 0) / 1000;
+    const axisY = -applyDeadzone(pad.axes[1] || 0);
 
     x = axisX;
     y = axisY;
@@ -47,6 +47,7 @@ function readGamepad(pad, prevButtons, action) {
 
 
     if (y != 0) {
+        console.log(y)
         action.speed(y);
     }
 }
