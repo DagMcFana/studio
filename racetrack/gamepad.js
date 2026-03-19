@@ -18,7 +18,7 @@ function readGamepad(pad, prevButtons, action) {
     if (!pad) { assert(false) }
 
     const axisX = applyDeadzone(pad.axes[0] || 0);
-    const axisY = applyDeadzone(pad.axes[1] || 0);
+    const axisY = - applyDeadzone(pad.axes[1] || 0) / 1000;
 
     x = axisX;
     y = axisY;
