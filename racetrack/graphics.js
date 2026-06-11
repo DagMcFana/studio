@@ -1,5 +1,5 @@
 const width = 1700
-const height = 1000
+const height = 850
 const scale_factor = 1
 
 class Pixel {

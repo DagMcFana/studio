@@ -103,8 +103,8 @@ function draw(ctx) {
       ctx.strokeStyle = "black";
       ctx.beginPath();
       ctx.moveTo(Pixel.scale(c.x + 5), Pixel.scale(height - c.y + 5));
-      ctx.lineTo(Pixel.scale(c.x + c.speed * Math.cos(c.angle) + 5),
-        Pixel.scale(height + 5 - (c.y + c.speed * Math.sin(c.angle))));
+      ctx.lineTo(Pixel.scale(c.x + 60*c.speed * Math.cos(c.angle) + 5),
+        Pixel.scale(height + 5 - (c.y + 60*c.speed * Math.sin(c.angle))));
       ctx.closePath();
       ctx.stroke();
     }
